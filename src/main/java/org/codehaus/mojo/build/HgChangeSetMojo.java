@@ -105,14 +105,18 @@ public class HgChangeSetMojo
         {
             String previousChangeSet = getChangeSetProperty();
             String previousChangeSetDate = getChangeSetDateProperty();
-            if ( previousChangeSet == null || previousChangeSetDate == null )
+            String previousScmBranch = getScmBranchProperty();
+            if ( previousChangeSet == null || previousChangeSetDate == null || previousScmBranch == null)
             {
                 String changeSet = getChangeSet();
                 String changeSetDate = getChangeSetDate();
+                String scmBranch = getScmBranch();
                 getLog().info( "Setting Mercurial Changeset: " + changeSet );
                 getLog().info( "Setting Mercurial Changeset Date: " + changeSetDate );
+                getLog().info( "Setting Mercurial Branch name: " + scmBranch );
                 setChangeSetProperty( changeSet );
                 setChangeSetDateProperty( changeSetDate );
+                setScmBranchProperty( scmBranch );
             }
         }
         catch ( ScmException e )
@@ -146,6 +150,13 @@ public class HgChangeSetMojo
                         : new String[] { "log", "-r", ".", "--template", "\"{date|isodate}\"" } );
     }
 
+    protected String getScmBranch()
+            throws ScmException, MojoExecutionException
+    {
+        return getHgCommandOutput( new String[] { "id" , "-b"} );
+    }
+
+
     protected String getChangeSetDateProperty()
     {
         return getProperty( "changeSetDate" );
@@ -155,6 +166,12 @@ public class HgChangeSetMojo
     {
         return getProperty( "changeSet" );
     }
+
+    protected String getScmBranchProperty()
+    {
+        return getProperty( "scmBranch" );
+    }
+
 
     protected String getProperty( String property )
     {
@@ -169,6 +186,12 @@ public class HgChangeSetMojo
     private void setChangeSetProperty( String changeSet )
     {
         setProperty( "changeSet", changeSet );
+    }
+
+
+    private void setScmBranchProperty( String scmBranch )
+    {
+        setProperty( "scmBranch", scmBranch );
     }
 
     private void setProperty( String property, String value )
